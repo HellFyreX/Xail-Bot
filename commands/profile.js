@@ -7,7 +7,6 @@ const { promisifyAll } = require('tsubaki');
 const fs = promisifyAll(require('fs'));
 const sql = require('sqlite');
 sql.open('./score.sqlite');
-var totalExp = "Error."
 
 exports.run = (client, message, args) => {
 	let badges = JSON.parse(fs.readFileSync('./badges.json', 'utf8'));
@@ -23,13 +22,18 @@ exports.run = (client, message, args) => {
 	message.guild.fetchMember(args.toString()).then(function (member) {
 		async function drawStats() {
 			message.delete ();
-
-			totalExp = await Experience.getTotalExperience(member.id);
-
+			
+			var totalExp = await Experience.getTotalExperience(member.id);
+			console.log("total exp = " + totalExp);
 			const level = await Experience.getLevel(member.id);
 			const levelBounds = await Experience.getLevelBounds(level);
 			const currentExp = await Experience.getCurrentExperience(member.id);
-
+			
+			
+			if (totalExp == undefined) {
+			totalExp = "Error.";
+			}
+			
 			if (!badges[member.id])
 				badges[member.id] = {
 					developer: 0,
@@ -66,7 +70,7 @@ exports.run = (client, message, args) => {
 			const generate = () => {
 				// Environment Variables
 				ctx.globalAlpha = 1
-					ctx.drawImage(base, 0, 0, 300, 300);
+				ctx.drawImage(base, 0, 0, 300, 300);
 				ctx.scale(1, 1);
 				ctx.patternQuality = 'billinear';
 				ctx.filter = 'bilinear';
@@ -79,6 +83,7 @@ exports.run = (client, message, args) => {
 				ctx.font = '16px Roboto';
 				ctx.fillStyle = member.displayHexColor;
 				ctx.fillText(member.displayName, 75, 35);
+				
 				// Role
 				ctx.font = '12px Roboto';
 				ctx.fillStyle = member.displayHexColor;
@@ -110,17 +115,20 @@ exports.run = (client, message, args) => {
 				ctx.fillStyle = '#E5E5E5';
 				ctx.fillText(`${level}`, 74, 107);
 
-				// RANK TITLE
+				// TOTAL EXP TITLE
 				ctx.font = '22px Uni Sans Heavy CAPS';
 				ctx.textAlign = 'left';
 				ctx.fillStyle = '#E5E5E5';
 				ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
 				ctx.fillText('TOTAL EXP.', 74, 197);
 
-				// RANK
+				// TOTAL EXP
 				ctx.font = '16px Roboto';
 				ctx.textAlign = 'left';
 				ctx.fillStyle = '#d1d1d1';
+				if (totalExp == "Error.") {
+				ctx.fillStyle = '#c1453a';
+				}
 				ctx.shadowColor = 'rgba(0, 0, 0, 0)';
 				ctx.fillText(totalExp, 74, 215);
 
