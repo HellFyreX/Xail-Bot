@@ -197,8 +197,11 @@ exports.run = (client, message, args) => {
 				if (debug == true) {
 					message.channel.send(":page_facing_up: **DEBUG:** __music__ is not equal to any of the available commands, setting __currentSong__ to __queue__.");
 				}
-
+				if (songRepeat == true) {
+				currentSong = currentSong;
+				} else {
 				currentSong = queue[0];
+				}
 			}
 
 			if (connection.speaking == true && music !== "skip" && music !== "queue" && music !== "next" && music !== "repeat" && music !== "end") {
@@ -217,11 +220,6 @@ exports.run = (client, message, args) => {
 				}
 			}
 
-			if (songRepeat == true) {
-				queue.push(currentSong);
-				queue.shift();
-			}
-
 			if (bot.npEnabled == true) {
 				yt.getInfo(currentSong, function (err, info) {
 					console.log("Now playing " + info.title)
@@ -233,7 +231,7 @@ exports.run = (client, message, args) => {
 				seek: 0,
 				volume: 0.7
 			};
-			const streamfunc = yt(queue[0], {
+			const streamfunc = yt(currentSong, {
 					filter: 'audioonly'
 				});
 
