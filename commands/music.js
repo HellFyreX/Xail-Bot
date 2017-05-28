@@ -188,6 +188,7 @@ exports.run = (client, message, args) => {
 			yt.getInfo(queue[0], function (err, info) {
 				if (err) {
 					message.reply(":no_entry_sign: **ERROR:** I couldn't find the video that you specified.");
+					queue.shift()
 					return;
 				}
 			});
